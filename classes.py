@@ -13,3 +13,15 @@
 """
 This file contains the class definitions of the classes used in SAT.py.
 """
+
+
+class Clause:
+
+    def __init__(self):
+
+
+
+
+class Sentence:
+
+    def __init__(self):
