@@ -194,13 +194,15 @@ def randBestSuccessor(model, sentence):
 
 def GSAT(N, sentence, max_restarts, max_climbs):
     """
+    GSAT algorithm. This random-restart, hill-climbing search algorithm returns a truth assignment that satisfies the
+    sentence or False if no solution was found within the maximum number of restarts and climbs.
 
     :param N: number of variables
     :param sentence: list of clauses with literals represented by positive or negative integers
     :param max_restarts: max. number of restarts, i.e. random truth assignments / models
     :param max_climbs: max. number of climbs, i.e. variable flips / successors
     :return model: model satisfying the sentence, i.e. list of (boolean) truth assignments ordered by variable number
-    :return: False if no solution found, given max_climbs and max_restarts
+    :return: False if no solution found within max_climbs and max_restarts
     """
 
     for i in range(1,max_restarts+1):
