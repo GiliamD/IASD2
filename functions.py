@@ -64,7 +64,7 @@ def writeFile(filename, algorithm, N, C, V, T):
     :return:
     """
 
-    # Create output file with same name as input file, but with extension .sol
+    # Create output file with same name as input file, but with extension .sol<algorithm name>
     with open(filename.replace('.cnf','.sol'+algorithm),'w') as file:
         file.write('c '+'Solution to the 3SAT problem defined in '+filename.replace('3SATproblems/','')+
                    ', obtained using the '+algorithm+' algorithm'+'\n')
@@ -403,7 +403,8 @@ def DPLLUnit(N, sentence, model):
 
 
 def DPLLExtend(model, symbols):
-    return sorted(model.extend(symbols), key=abs)
+    model.extend(symbols)
+    return sorted(model, key=abs)
 
 
 def DPLL(N, sentence, model, modelsave):
