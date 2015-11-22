@@ -17,7 +17,7 @@ SAT problems: GSAT, WalkSAT and DPLL.
 
 from random import choice
 from copy import deepcopy
-from numpy.random import choice as pchoice
+#from numpy.random import choice as pchoice
 
 
 def readFile(filename):
@@ -356,13 +356,110 @@ def WalkSAT(N, sentence, p, max_flips):
     return -1
 
 
-def DPLL(input):
-    """
-    DPLL algorithm.
+def DPLLPure(N, sentence, model):
+    pureSymbols = []
+    for clause in sentence:
+        clauseStatus = False  # we assume clause is false
+        for literal in clause:
+            for proposition in model:
+                if literal == proposition:  # if we find that it matches (so the clause is true)
+                    clauseStatus = True  # clause is true
+                    break
+                else:
+                    if -literal not in pureSymbols:
+                        pureSymbols.append(literal)
+                    else:
+                        pureSymbols.remove(-literal)
+            if clauseStatus is True:    # we don't need to check other literals in this clause
+                break
 
-    :param input:
-    :return:
-    """
+    pureSymbols = sorted(pureSymbols, key=abs)
+    return pureSymbols
 
-    # Return 0 if failed to find a model that satisfies the sentence
-    return 0
+
+def DPLLUnit(N, sentence, model):
+    unitClauses = []
+    for clause in sentence:
+        if len(clause) == 1:  # if clause has exactly one literal
+            unitClauses.append(clause[0])  # add it to unit clauses
+            continue
+
+        clauseStatus = False  # we assume clause is false
+        clauseUnitTmp = []  # initialize list, that will contain temporary candidates for unit clauses
+        for literal in clause:
+            for proposition in model:
+                if literal == proposition:  # if we find that it matches (so the clause is true)
+                    clauseStatus = True  # clause is true
+                    break
+                elif literal != -proposition:  # if we don't find negation as well
+                    clauseUnitTmp.append(literal)   # append to possible candidates
+            if clauseStatus is True:    # we don't need to check other literals in this clause
+                break
+        if len(clauseUnitTmp) == 1:     # if we have only one literal, then this is a unit clause
+            unitClauses.append(clauseUnitTmp[0])
+
+    unitClauses = sorted(unitClauses, key=abs)
+    return unitClauses
+
+
+def DPLLExtend(model, symbols):
+    return sorted(model.extend(symbols), key=abs)
+
+
+def DPLL(N, sentence, model, modelsave):
+    # firstly, we check, whether we can say if the sentence is true or false with current model
+    if len(model) > 0:  # if we have anything in model already
+        for clause in sentence:
+            clauseStatus = False  # we assume clause is false
+            clauseFalseLits = 0  # how many literals are negated in clause by model
+            for literal in clause:
+                for proposition in model:
+                    if literal == proposition:  # if we find that it matches (so the clause is true)
+                        clauseStatus = True  # clause is true
+                        break
+                    elif literal == -proposition:  # if we find negation
+                        clauseFalseLits += 1    # increase the number of false literals in this clause
+                if clauseStatus is True:    # we don't need to check other literals in this clause
+                    break
+            if clauseStatus is True:    # if clause is true, continue checking
+                continue
+            elif clauseFalseLits == len(clause):  # otherwise, if all literals in clause are negated
+                return False    # return false, because model make this clause (so whole sentence) false
+            else:
+                break  # model has too few propositions)
+        else:
+            modelsave = model
+            return True  # every clause is satisfied (we didn't use break)
+
+    # at this point of algorithm we have the situation, when model has too few propositions to finish the computations
+
+    symbols = DPLLPure(N, sentence, model)  # get the list of pure symbols
+    if len(symbols) > 0:
+        return DPLL(N, sentence, DPLLExtend(model, symbols), modelsave)
+
+    symbols = DPLLUnit(N, sentence, model)  # get the list of unit clauses
+    if len(symbols) > 0:
+        return DPLL(N, sentence, DPLLExtend(model, symbols), modelsave)
+
+    for i in range(1, N+1):   # search for next unassigned literal
+        if i not in model and -i not in model:
+            symbol = i
+            break
+    else:
+        print('No more unassigned symbols left!')
+        return False
+
+    plus = DPLL(N, sentence, DPLLExtend(model, [symbol]), modelsave)
+    minus = DPLL(N, sentence, DPLLExtend(model, [-symbol]), modelsave)
+
+    return plus or minus
+
+
+
+def DPLLInit(N, sentence):
+
+    modelsave = []
+
+    DPLL(N, sentence, [], modelsave)
+
+    return modelsave

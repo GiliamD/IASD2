@@ -35,23 +35,23 @@ for file in files:
         # Get number of variables, number of clauses and the sentence
         N, C, sentence = readFile(filename)
 
-        # Run and time the GSAT algorithm and save results
-        print('Running GSAT')
-        t0 = clock()
-        GSAT_sol = GSAT(N,sentence,max_restarts=10,max_climbs=100)
-        t_GSAT = clock() - t0
-        writeFile(filename,'GSAT',N,C,GSAT_sol,t_GSAT)
-
-        # Run and time the WalkSAT algorithm and save results
-        print('Running WalkSAT')
-        t0 = clock()
-        WalkSAT_sol = WalkSAT(N,sentence,p=0.5,max_flips=100)
-        t_WalkSAT = clock() - t0
-        writeFile(filename,'WalkSAT',N,C,WalkSAT_sol,t_WalkSAT)
-
-        # # Run and time the DPLL algorithm and save results
-        # print('Running DPLL')
+        # # Run and time the GSAT algorithm and save results
+        # print('Running GSAT')
         # t0 = clock()
-        # DPLL_sol = DPLL()
-        # t_DPLL = clock() - t0
-        # writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
+        # GSAT_sol = GSAT(N,sentence,max_restarts=10,max_climbs=100)
+        # t_GSAT = clock() - t0
+        # writeFile(filename,'GSAT',N,C,GSAT_sol,t_GSAT)
+        #
+        # # Run and time the WalkSAT algorithm and save results
+        # print('Running WalkSAT')
+        # t0 = clock()
+        # WalkSAT_sol = WalkSAT(N,sentence,p=0.5,max_flips=100)
+        # t_WalkSAT = clock() - t0
+        # writeFile(filename,'WalkSAT',N,C,WalkSAT_sol,t_WalkSAT)
+
+        # Run and time the DPLL algorithm and save results
+        print('Running DPLL')
+        t0 = clock()
+        DPLL_sol = DPLLInit(N, sentence)
+        t_DPLL = clock() - t0
+        writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
