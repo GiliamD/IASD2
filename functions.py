@@ -55,13 +55,34 @@ def writeFile(filename, N, C, V, T):
     Writes solution to output file in DIMACS format, containing the number of variables and clauses, the variable
     assignments and the timing of the code execution.
 
-    :param filename:
-    :param N:
-    :param C:
-    :param V:
+    :param filename: file name string
+    :param N: number of variables
+    :param C: number of clauses
+    :param V: variable assignments
     :param T:
     :return:
     """
+
+    # Create output file with same name as input file, but with extension .sol
+    with open(filename.replace('.cnf','.sol'),'w') as file:
+        file.write('c '+'Solution to 3SAT problem defined in '+filename.replace('3SATproblems/','')+'\n')
+        # If there is a solution, output 1 (= satisfiable)
+        if isinstance(V,list):
+            solution = 1
+        # If no solution was found, output 0 (= unsatisfiable) in case of DPLL or -1 (= no decision) in case of GSAT or
+        # WalkSAT
+        else:
+            solution = V
+        # Write solution line
+        file.write('s '+'cnf '+str(solution)+' '+str(N)+' '+str(C)+'\n')
+        # Write timing line, including repetition of solution line
+        file.write('t '+'cnf '+str(solution)+' '+str(N)+' '+str(C)+' '+str(T)+'\n')
+        # Write variable lines
+        for i in range(0,len(V)):
+            if V[i] is not False:
+                file.write('v '+str(i+1)+'\n')
+            else:
+                file.write('v '+str(-(i+1))+'\n')
 
     return 1
 
@@ -80,6 +101,13 @@ def randAssignment(N):
 
 
 def assign(model, sentence):
+    """
+    Assigns variable values from model to sentence.
+
+    :param model: list of (boolean) truth assignments ordered by variable number
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :return tmp_sentence: list of clauses with literals evaluated as True/False
+    """
 
     # Create copy of model and sentence without reference
     tmp_model = model[:]
@@ -238,6 +266,13 @@ def randBestSuccessor2(clause, model, sentence):
 
 
 def randFalseClause(model, sentence):
+    """
+    Returns a random choice of one of the clauses in the sentence that is not satisfied, i.e. that is False.
+
+    :param model: list of (boolean) truth assignments ordered by variable number
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :return randomFalseClause: random choice of one of the clauses of the sentence that is False
+    """
 
     # Assign True/False to the variables in the sentence according to the model
     tmp_sentence = assign(model,sentence)
@@ -264,7 +299,7 @@ def GSAT(N, sentence, max_restarts, max_climbs):
     :param max_restarts: max. number of restarts, i.e. random truth assignments / models
     :param max_climbs: max. number of climbs, i.e. variable flips / successors
     :return model: model satisfying the sentence, i.e. list of (boolean) truth assignments ordered by variable number
-    :return: False if no solution found within max_climbs and max_restarts
+    :return: -1 if no solution found within max_climbs and max_restarts
     """
 
     for i in range(1,max_restarts+1):
@@ -277,8 +312,8 @@ def GSAT(N, sentence, max_restarts, max_climbs):
             else:
                 model = randBestSuccessor(model,sentence)
 
-    # Return False if failed to find a model that satisfies the sentence
-    return False
+    # Return -1 if failed to find a model that satisfies the sentence
+    return -1
 
 
 def WalkSAT(N, sentence, p, max_flips):
@@ -291,7 +326,7 @@ def WalkSAT(N, sentence, p, max_flips):
     :param p: probability of performing a random variable flip rather than a greedy variable flip
     :param max_flips: maximum number of variable flips before giving up
     :return model: model satisfying the sentence, i.e. list of (boolean) truth assignments ordered by variable number
-    :return: False if no solution found within max_flips
+    :return: -1 if no solution found within max_flips
     """
 
     model = randAssignment(N)
@@ -314,7 +349,8 @@ def WalkSAT(N, sentence, p, max_flips):
             else:
                 model = randBestSuccessor2(clause,model,sentence)
 
-    return False
+    # Return -1 if failed to find a model that satisfies the sentence
+    return -1
 
 
 def DPLL(input):
@@ -325,4 +361,5 @@ def DPLL(input):
     :return:
     """
 
-    return 1
+    # Return 0 if failed to find a model that satisfies the sentence
+    return 0
