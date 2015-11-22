@@ -50,22 +50,24 @@ def readFile(filename):
     return N, C, clauses
 
 
-def writeFile(filename, N, C, V, T):
+def writeFile(filename, algorithm, N, C, V, T):
     """
     Writes solution to output file in DIMACS format, containing the number of variables and clauses, the variable
     assignments and the timing of the code execution.
 
     :param filename: file name string
+    :param algorithm: algorithm name string (GSAT, WalkSAT or DPLL)
     :param N: number of variables
     :param C: number of clauses
-    :param V: variable assignments
-    :param T:
+    :param V: variable assignments or, if no solution found, 0 (= unsatisfiable) or -1 (= no decision)
+    :param T: algorithm execution time (CPU time) in seconds
     :return:
     """
 
     # Create output file with same name as input file, but with extension .sol
-    with open(filename.replace('.cnf','.sol'),'w') as file:
-        file.write('c '+'Solution to 3SAT problem defined in '+filename.replace('3SATproblems/','')+'\n')
+    with open(filename.replace('.cnf','.sol'+algorithm),'w') as file:
+        file.write('c '+'Solution to the 3SAT problem defined in '+filename.replace('3SATproblems/','')+
+                   ', obtained using the '+algorithm+' algorithm'+'\n')
         # If there is a solution, output 1 (= satisfiable)
         if isinstance(V,list):
             solution = 1
@@ -77,12 +79,15 @@ def writeFile(filename, N, C, V, T):
         file.write('s '+'cnf '+str(solution)+' '+str(N)+' '+str(C)+'\n')
         # Write timing line, including repetition of solution line
         file.write('t '+'cnf '+str(solution)+' '+str(N)+' '+str(C)+' '+str(T)+'\n')
-        # Write variable lines
-        for i in range(0,len(V)):
-            if V[i] is not False:
-                file.write('v '+str(i+1)+'\n')
-            else:
-                file.write('v '+str(-(i+1))+'\n')
+
+        # If there is a solution, write it to output file
+        if isinstance(V,list):
+            # Write variable lines
+            for i in range(0,len(V)):
+                if V[i] is not False:
+                    file.write('v '+str(i+1)+'\n')
+                else:
+                    file.write('v '+str(-(i+1))+'\n')
 
     return 1
 
@@ -303,10 +308,8 @@ def GSAT(N, sentence, max_restarts, max_climbs):
     """
 
     for i in range(1,max_restarts+1):
-        print('restart '+str(i))
         model = randAssignment(N)
         for j in range(1,max_climbs+1):
-            print('climb '+str(j))
             if satisfies(model,sentence):
                 return model
             else:
