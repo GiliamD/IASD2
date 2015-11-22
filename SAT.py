@@ -50,8 +50,10 @@ for file in files:
         # writeFile(filename,'WalkSAT',N,C,WalkSAT_sol,t_WalkSAT)
 
         # Run and time the DPLL algorithm and save results
-        print('Running DPLL')
-        t0 = clock()
+        # print('Running DPLL')
+        # t0 = clock()
         DPLL_sol = DPLLInit(N, sentence)
-        t_DPLL = clock() - t0
-        writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
+        print("solved")
+        break
+        # t_DPLL = clock() - t0
+        # writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
