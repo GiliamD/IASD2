@@ -29,3 +29,5 @@ files = listdir(problems_dir)
 N, C, sentence = readFile(problems_dir+files[0])
 
 GSAT_sol = GSAT(N,sentence,max_restarts=10,max_climbs=100)
+
+WalkSAT_sol = WalkSAT(N,sentence,p=0.5,max_flips=100)

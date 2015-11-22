@@ -17,6 +17,7 @@ SAT problems: GSAT, WalkSAT and DPLL.
 
 from random import choice
 from copy import deepcopy
+from numpy.random import choice as pchoice
 
 
 def readFile(filename):
@@ -78,14 +79,7 @@ def randAssignment(N):
     return model
 
 
-def satisfies(model, sentence):
-    """
-    Checks if a model satisfies all clauses of a sentence.
-
-    :param model: list of (boolean) truth assignments ordered by variable number
-    :param sentence: list of clauses with literals represented by positive or negative integers
-    :return: True if model satisfies sentence, False otherwise
-    """
+def assign(model, sentence):
 
     # Create copy of model and sentence without reference
     tmp_model = model[:]
@@ -102,6 +96,21 @@ def satisfies(model, sentence):
             # If literal is negative, substitute literal by negation of truth assignment
             else:
                 tmp_sentence[i][j] = not tmp_model[abs(literal)-1]
+
+    return tmp_sentence
+
+
+def satisfies(model, sentence):
+    """
+    Checks if a model satisfies all clauses of a sentence.
+
+    :param model: list of (boolean) truth assignments ordered by variable number
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :return: True if model satisfies sentence, False otherwise
+    """
+
+    # Assign True/False to the variables in the sentence according to the model
+    tmp_sentence = assign(model,sentence)
 
     # If there is any clause with all literals False, then sentence is unsatisfiable
     for clause in tmp_sentence:
@@ -121,21 +130,8 @@ def numSatisfiedClauses(model, sentence):
     :return countSatisfiedClauses: number of clauses satisfied by the model
     """
 
-    # Create copy of model and sentence without reference
-    tmp_model = model[:]
-    tmp_sentence = deepcopy(sentence)
-
-    # Loop through clauses of sentence
-    for i in range(len(tmp_sentence)):
-        # Loop through the three literals of clause
-        for j in range(3):
-            literal = sentence[i][j]
-            # If literal is positive, substitute literal by truth assignment
-            if literal > 0:
-                tmp_sentence[i][j] = tmp_model[literal-1]
-            # If literal is negative, substitute literal by negation of truth assignment
-            else:
-                tmp_sentence[i][j] = not tmp_model[abs(literal)-1]
+    # Assign True/False to the variables in the sentence according to the model
+    tmp_sentence = assign(model,sentence)
 
     # Count the number of satsfied clauses, i.e. clauses with at least one True literal
     countSatisfiedClauses = 0
@@ -192,10 +188,76 @@ def randBestSuccessor(model, sentence):
     return successor_model
 
 
+def randBestSuccessor2(clause, model, sentence):
+    """
+    Determines random best successor of the current model by flipping the variable assignments of the variables in the
+    specified clause one by one and checking which variable flip results in the model with the highest number of
+    satisfied clauses. NOTE: The difference with randBestSuccessor() is that it only checks the variables present in the
+    specified clause and not all variables of the model.
+
+    :param clause: list of three literals
+    :param model: list of (boolean) truth assignments ordered by variable number
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :return successor_model: random best successor of input model, i.e. copy with one flipped (boolean) truth assignment
+    """
+
+    # Create copy of sentence without reference
+    tmp_sentence = deepcopy(sentence)
+
+    # Create dictionary for storing the number of satisfied clauses for each successor
+    satisfiedClauses = dict()
+
+    # Initialize successor model as copy of model
+    successor_model = model[:]
+
+    # Loop through the variables in the clause
+    for variable in list(map(abs,clause)):
+        # Create copy of model without reference
+        tmp_model = model[:]
+
+        # Flip truth assignment for this variable. NOTE: -1 because index starts at 0 while variables start at 1
+        tmp_model[variable-1] = not tmp_model[variable-1]
+
+        # Count number of satisfied clauses for this successor and store in dictionary
+        satisfiedClauses[variable] = numSatisfiedClauses(tmp_model,tmp_sentence)
+
+    # Find successor with maximum number of satisfied clauses
+
+    # Get keys (i.e. variables) corresponding to best successors when flipped. NOTE: max is assigned to variable m such
+    # that it is only computed once
+    bestVars = [key for m in [max(satisfiedClauses.values())] for key,val in satisfiedClauses.items() if val == m]
+
+    # If multiple best successors, choose one randomly
+    randBestVar = choice(bestVars)
+
+    # Flip the variable in the model. NOTE: Again -1, because variables start at 1 and index at 0
+    successor_model[randBestVar-1] = not model[randBestVar-1]
+
+    # Return random best successor model
+    return successor_model
+
+
+def randFalseClause(model, sentence):
+
+    # Assign True/False to the variables in the sentence according to the model
+    tmp_sentence = assign(model,sentence)
+
+    # List all False clauses in unassigned form, i.e. with the original literals/symbols instead of True/False
+    falseClauses = []
+    for i in range(len(tmp_sentence)):
+        if all(literal is False for literal in tmp_sentence[i]):
+            falseClauses.append(sentence[i])
+
+    # Choose one of the False clauses randomly
+    randomFalseClause = choice(falseClauses)
+
+    return randomFalseClause
+
+
 def GSAT(N, sentence, max_restarts, max_climbs):
     """
     GSAT algorithm. This random-restart, hill-climbing search algorithm returns a truth assignment that satisfies the
-    sentence or False if no solution was found within the maximum number of restarts and climbs.
+    sentence or returns False if no solution was found within the maximum number of restarts and climbs.
 
     :param N: number of variables
     :param sentence: list of clauses with literals represented by positive or negative integers
@@ -219,15 +281,40 @@ def GSAT(N, sentence, max_restarts, max_climbs):
     return False
 
 
-def WalkSAT(input):
+def WalkSAT(N, sentence, p, max_flips):
     """
-    WalkSAT algorithm.
+    WalkSAT algorithm. This local-search algorithm returns a truth assignment that satisfies the sentence or returns
+    False if no solution was found within the maximum number of flips.
 
-    :param input:
-    :return:
+    :param N: number of variables
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :param p: probability of performing a random variable flip rather than a greedy variable flip
+    :param max_flips: maximum number of variable flips before giving up
+    :return model: model satisfying the sentence, i.e. list of (boolean) truth assignments ordered by variable number
+    :return: False if no solution found within max_flips
     """
 
-    return 1
+    model = randAssignment(N)
+
+    for i in range(1,max_flips+1):
+        if satisfies(model,sentence):
+            return model
+        else:
+            # Randomly choose False clause
+            clause = randFalseClause(model,sentence)
+
+            # With probability p, flip variable in model randomly chosen from clause
+            if pchoice([True,False],p=[p,1-p]):
+                # Randomly choose variable from clause
+                variable = abs(choice(clause))
+                # Flip variable truth assignment in model
+                model[variable-1] = not model[variable-1]
+
+            # Else, flip variable in model chosen from clause that maximizes the number of satisfied clauses
+            else:
+                model = randBestSuccessor2(clause,model,sentence)
+
+    return False
 
 
 def DPLL(input):
