@@ -68,33 +68,33 @@ for file in files:
             print('Output files already exist.')
 
 
-# Initialize dictionaries to store number of variables N, number of clauses C and execution time T for each problem
-GSATdata = dict()
-WalkSATdata = dict()
-DPLLdata = dict()
-
-# Read output files and collect ratio C/N and corresponding execution time T
-for file in files:
-    if file.endswith('.solGSAT'):
-        N,C,T = readSolFile(problems_dir+file)
-        if C/N in GSATdata.keys():
-            GSATdata[C/N] = GSATdata[C/N].append(T)
-        else:
-            GSATdata[C/N] = [T]
-    elif file.endswith('.solWalkSAT'):
-        N,C,T = readSolFile(problems_dir+file)
-        if C/N in WalkSATdata.keys():
-            WalkSATdata[C/N] = WalkSATdata[C/N].append(T)
-        else:
-            WalkSATdata[C/N] = [T]
-    elif file.endswith('.solDPLL'):
-        N,C,T = readSolFile(problems_dir+file)
-        if C/N in DPLLdata.keys():
-            DPLLdata[C/N] = DPLLdata[C/N].append(T)
-        else:
-            DPLLdata[C/N] = [T]
-    else:
-        continue
+# # Initialize dictionaries to store number of variables N, number of clauses C and execution time T for each problem
+# GSATdata = dict()
+# WalkSATdata = dict()
+# DPLLdata = dict()
+#
+# # Read output files and collect ratio C/N and corresponding execution time T
+# for file in files:
+#     if file.endswith('.solGSAT'):
+#         N,C,T = readSolFile(problems_dir+file)
+#         if C/N in GSATdata.keys():
+#             GSATdata[C/N] = GSATdata[C/N].append(T)
+#         else:
+#             GSATdata[C/N] = [T]
+#     elif file.endswith('.solWalkSAT'):
+#         N,C,T = readSolFile(problems_dir+file)
+#         if C/N in WalkSATdata.keys():
+#             WalkSATdata[C/N] = WalkSATdata[C/N].append(T)
+#         else:
+#             WalkSATdata[C/N] = [T]
+#     elif file.endswith('.solDPLL'):
+#         N,C,T = readSolFile(problems_dir+file)
+#         if C/N in DPLLdata.keys():
+#             DPLLdata[C/N] = DPLLdata[C/N].append(T)
+#         else:
+#             DPLLdata[C/N] = [T]
+#     else:
+#         continue
 
 # # Plot results
 # plt.figure(1)
