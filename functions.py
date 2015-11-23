@@ -17,7 +17,7 @@ SAT problems: GSAT, WalkSAT and DPLL.
 
 from random import choice
 from copy import deepcopy
-#from numpy.random import choice as pchoice
+from numpy.random import choice as pchoice
 
 
 def readFile(filename):
@@ -49,6 +49,30 @@ def readFile(filename):
 
     return N, C, clauses
 
+
+def readSolFile(filename):
+    """
+    Reads and processes 3SAT solution/output file of DIMACS format and returns #variables, #clauses and execution time.
+
+    :param filename: file name string
+    :return N: number of variables
+    :return C: number of clauses
+    :return T: execution time (CPU) in seconds
+    """
+
+    # Open file for reading. NOTE: Use of 'with' does not require close()
+    with open(filename, 'r') as file:
+        for line in file:
+            # Skip comment lines starting with 'c'
+            if not line.startswith('c'):
+                # Read timing line starting with 't', which also contains the solution line information.
+                if line.startswith('t'):
+                    N = int(line.split()[-3])   # number of variables
+                    C = int(line.split()[-2])   # number of clauses
+                    T = float(line.split()[-1])   # execution time
+                    break
+
+    return N, C, T
 
 def writeFile(filename, algorithm, N, C, V, T):
     """
