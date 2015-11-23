@@ -1,0 +1,3 @@
+c Solution to the 3SAT problem defined in n30_c195.cnf, obtained using the GSAT algorithm
+s cnf -1 30 195
+t cnf -1 30 195 45.449838

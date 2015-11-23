@@ -1,0 +1,3 @@
+c Solution to the 3SAT problem defined in n10_c75.cnf, obtained using the WalkSAT algorithm
+s cnf -1 10 75
+t cnf -1 10 75 4.727674
