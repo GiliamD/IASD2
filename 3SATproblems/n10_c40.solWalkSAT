@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n10_c40.cnf, obtained using the WalkSAT algorithm
 s cnf 1 10 40
-t cnf 1 10 40 0.081202
+t cnf 1 10 40 0.036738999999999966
 v -1
 v 2
 v 3

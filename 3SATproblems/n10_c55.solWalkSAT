@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n10_c55.cnf, obtained using the WalkSAT algorithm
 s cnf 1 10 55
-t cnf 1 10 55 0.017854000000000037
+t cnf 1 10 55 0.026361999999999997
 v -1
 v -2
 v 3

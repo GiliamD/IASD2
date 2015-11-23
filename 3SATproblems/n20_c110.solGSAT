@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n20_c110.cnf, obtained using the GSAT algorithm
 s cnf 1 20 110
-t cnf 1 20 110 9.691087000000003
+t cnf 1 20 110 3.938484
 v -1
 v -2
 v -3

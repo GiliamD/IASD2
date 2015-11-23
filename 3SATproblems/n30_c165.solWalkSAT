@@ -1,3 +1,0 @@
-c Solution to the 3SAT problem defined in n30_c165.cnf, obtained using the WalkSAT algorithm
-s cnf -1 30 165
-t cnf -1 30 165 3.1032709999999994

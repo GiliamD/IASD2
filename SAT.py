@@ -55,57 +55,72 @@ for file in files:
             t_WalkSAT = clock() - t0
             writeFile(filename,'WalkSAT',N,C,WalkSAT_sol,t_WalkSAT)
 
-        # # If no DPLL ouput exists yet for this problem, perform DPLL
-        # if not files.count(file.replace('.cnf','.solDPLL')):
-        #     # Run and time the DPLL algorithm and save results
-        #     print('Running DPLL')
-        #     t0 = clock()
-        #     DPLL_sol = DPLLInit(N, sentence)
-        #     t_DPLL = clock() - t0
-        #     writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
+        # If no DPLL ouput exists yet for this problem, perform DPLL
+        if not files.count(file.replace('.cnf','.solDPLL')):
+            # Run and time the DPLL algorithm and save results
+            print('Running DPLL')
+            t0 = clock()
+            DPLL_sol = DPLLInit(N, sentence)
+            t_DPLL = clock() - t0
+            writeFile(filename,'DPLL',N,C,DPLL_sol,t_DPLL)
 
         else:
             print('Output files already exist.')
 
 
-# # Initialize dictionaries to store number of variables N, number of clauses C and execution time T for each problem
-# GSATdata = dict()
-# WalkSATdata = dict()
-# DPLLdata = dict()
-#
-# # Read output files and collect ratio C/N and corresponding execution time T
-# for file in files:
-#     if file.endswith('.solGSAT'):
-#         N,C,T = readSolFile(problems_dir+file)
-#         if C/N in GSATdata.keys():
-#             GSATdata[C/N] = GSATdata[C/N].append(T)
-#         else:
-#             GSATdata[C/N] = [T]
-#     elif file.endswith('.solWalkSAT'):
-#         N,C,T = readSolFile(problems_dir+file)
-#         if C/N in WalkSATdata.keys():
-#             WalkSATdata[C/N] = WalkSATdata[C/N].append(T)
-#         else:
-#             WalkSATdata[C/N] = [T]
-#     elif file.endswith('.solDPLL'):
-#         N,C,T = readSolFile(problems_dir+file)
-#         if C/N in DPLLdata.keys():
-#             DPLLdata[C/N] = DPLLdata[C/N].append(T)
-#         else:
-#             DPLLdata[C/N] = [T]
-#     else:
-#         continue
+# Initialize dictionaries to store number of variables N, number of clauses C and execution time T for each problem
+GSATdata = dict()
+WalkSATdata = dict()
+DPLLdata = dict()
 
-# # Plot results
-# plt.figure(1)
-# x = list(zip(*sorted(GSATdata.items())))[0]
-# y = list(zip(*sorted(GSATdata.items())))[1]
-# plt.plot(x,y,'ok-')
-#
-# x = list(zip(*sorted(WalkSATdata.items())))[0]
-# y = list(zip(*sorted(WalkSATdata.items())))[1]
-# plt.plot(x,y,'sr--')
-#
-# plt.show()
+# Read output files and collect ratio C/N and corresponding execution time T
+for file in files:
+    if file.endswith('.solGSAT'):
+        N,C,T = readSolFile(problems_dir+file)
+        if not [N,C,T]==[False]*3:
+            if C/N in GSATdata.keys():
+                GSATdata[C/N].append(T)
+            else:
+                GSATdata[C/N] = [T]
+    elif file.endswith('.solWalkSAT'):
+        N,C,T = readSolFile(problems_dir+file)
+        if not [N,C,T]==[False]*3:
+            if C/N in WalkSATdata.keys():
+                WalkSATdata[C/N].append(T)
+            else:
+                WalkSATdata[C/N] = [T]
+    elif file.endswith('.solDPLL'):
+        N,C,T = readSolFile(problems_dir+file)
+        if not [N,C,T]==[False]*3:
+            if C/N in DPLLdata.keys():
+                DPLLdata[C/N].append(T)
+            else:
+                DPLLdata[C/N] = [T]
+    else:
+        continue
+
+print('Done.')
+print('Plotting ...')
+
+# Plot results
+plt.figure(1)
+x = [key for key in list(zip(*sorted(GSATdata.items())))[0]]
+y = [mean(value) for value in list(zip(*sorted(GSATdata.items())))[1]]
+plt.plot(x,y,'ok-')
+
+x = [key for key in list(zip(*sorted(WalkSATdata.items())))[0]]
+y = [mean(value) for value in list(zip(*sorted(WalkSATdata.items())))[1]]
+plt.plot(x,y,'sr--')
+
+x = [key for key in list(zip(*sorted(DPLLdata.items())))[0]]
+y = [mean(value) for value in list(zip(*sorted(DPLLdata.items())))[1]]
+plt.plot(x,y,'db-.')
+
+plt.xlabel('Ratio of clauses to variables, C/N [-]')
+plt.ylabel('Average algorithm CPU time, t [sec]')
+plt.grid(True)
+plt.show()
+
+#plt.savefig('CNratio_CPUtime.png', bbox_inches='tight')
 
 print('Done.')

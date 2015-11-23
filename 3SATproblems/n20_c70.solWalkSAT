@@ -1,7 +1,7 @@
 c Solution to the 3SAT problem defined in n20_c70.cnf, obtained using the WalkSAT algorithm
 s cnf 1 20 70
-t cnf 1 20 70 0.029009999999999536
-v 1
+t cnf 1 20 70 0.20426199999999994
+v -1
 v 2
 v -3
 v 4
@@ -16,7 +16,7 @@ v -12
 v -13
 v -14
 v -15
-v -16
+v 16
 v 17
 v 18
 v -19

@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n30_c120.cnf, obtained using the GSAT algorithm
 s cnf 1 30 120
-t cnf 1 30 120 26.012819
+t cnf 1 30 120 4.993286999999999
 v 1
 v -2
 v 3
@@ -9,7 +9,7 @@ v 5
 v 6
 v -7
 v 8
-v 9
+v -9
 v -10
 v 11
 v -12
@@ -19,7 +19,7 @@ v 15
 v -16
 v -17
 v 18
-v 19
+v -19
 v 20
 v 21
 v -22

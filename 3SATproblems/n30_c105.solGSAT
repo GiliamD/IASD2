@@ -1,14 +1,14 @@
 c Solution to the 3SAT problem defined in n30_c105.cnf, obtained using the GSAT algorithm
 s cnf 1 30 105
-t cnf 1 30 105 1.277551
+t cnf 1 30 105 8.334482
 v 1
-v 2
+v -2
 v -3
 v 4
 v -5
 v 6
 v -7
-v 8
+v -8
 v 9
 v -10
 v 11
@@ -19,7 +19,7 @@ v -15
 v 16
 v -17
 v -18
-v 19
+v -19
 v 20
 v 21
 v -22

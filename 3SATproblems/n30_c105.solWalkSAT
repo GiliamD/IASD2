@@ -1,9 +1,9 @@
 c Solution to the 3SAT problem defined in n30_c105.cnf, obtained using the WalkSAT algorithm
 s cnf 1 30 105
-t cnf 1 30 105 0.15549900000000005
+t cnf 1 30 105 0.7763649999999984
 v 1
 v -2
-v 3
+v -3
 v -4
 v -5
 v 6

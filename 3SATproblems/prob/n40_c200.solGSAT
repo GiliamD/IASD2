@@ -1,0 +1,3 @@
+c Solution to the 3SAT problem defined in n40_c200.cnf, obtained using the GSAT algorithm
+s cnf -1 40 200
+t cnf -1 40 200 71.347915

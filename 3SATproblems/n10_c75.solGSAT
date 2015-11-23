@@ -1,3 +1,0 @@
-c Solution to the 3SAT problem defined in n10_c75.cnf, obtained using the GSAT algorithm
-s cnf -1 10 75
-t cnf -1 10 75 7.1152999999999995

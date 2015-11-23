@@ -1,0 +1,12 @@
+c Solution to the 3SAT problem defined in n10_c50.cnf, obtained using the DPLL algorithm
+s cnf 1 10 50
+t cnf 1 10 50 0.0018899999999999473
+v 1
+v 2
+v 3
+v 4
+v 5
+v 6
+v 7
+v 8
+v 9

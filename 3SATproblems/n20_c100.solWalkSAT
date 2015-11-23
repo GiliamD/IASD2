@@ -1,3 +1,0 @@
-c Solution to the 3SAT problem defined in n20_c100.cnf, obtained using the WalkSAT algorithm
-s cnf -1 20 100
-t cnf -1 20 100 12.474211000000004

@@ -1,3 +1,0 @@
-c Solution to the 3SAT problem defined in n30_c180.cnf, obtained using the GSAT algorithm
-s cnf -1 30 180
-t cnf -1 30 180 41.626766999999994

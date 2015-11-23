@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n20_c80.cnf, obtained using the WalkSAT algorithm
 s cnf 1 20 80
-t cnf 1 20 80 0.13331700000000524
+t cnf 1 20 80 0.1601309999999998
 v -1
 v 2
 v -3

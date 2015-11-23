@@ -17,7 +17,7 @@ SAT problems: GSAT, WalkSAT and DPLL.
 
 from random import choice
 from copy import deepcopy
-#from numpy.random import choice as pchoice
+from numpy.random import choice as pchoice
 
 
 def readFile(filename):
@@ -67,10 +67,15 @@ def readSolFile(filename):
             if not line.startswith('c'):
                 # Read timing line starting with 't', which also contains the solution line information.
                 if line.startswith('t'):
-                    N = int(line.split()[-3])   # number of variables
-                    C = int(line.split()[-2])   # number of clauses
-                    T = float(line.split()[-1])   # execution time
-                    break
+                    # If solution found, get N, C, T
+                    if int(line.split()[2])==1:
+                        N = int(line.split()[-3])   # number of variables
+                        C = int(line.split()[-2])   # number of clauses
+                        T = float(line.split()[-1])   # execution time
+                        break
+                    # Else, ignore
+                    else:
+                        return [False]*3
 
     return N, C, T
 

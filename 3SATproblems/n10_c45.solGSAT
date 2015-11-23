@@ -1,6 +1,6 @@
 c Solution to the 3SAT problem defined in n10_c45.cnf, obtained using the GSAT algorithm
 s cnf 1 10 45
-t cnf 1 10 45 0.02637899999999993
+t cnf 1 10 45 0.019214999999999982
 v 1
 v 2
 v 3

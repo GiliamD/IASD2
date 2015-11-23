@@ -1,0 +1,14 @@
+c Solution to the 3SAT problem defined in n12_c63.cnf, obtained using the DPLL algorithm
+s cnf 1 12 63
+t cnf 1 12 63 0.004927000000000015
+v 1
+v 2
+v 3
+v 4
+v 5
+v 6
+v 7
+v 8
+v 9
+v 10
+v 11
