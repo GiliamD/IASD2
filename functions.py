@@ -386,6 +386,14 @@ def WalkSAT(N, sentence, p, max_flips):
 
 
 def DPLLPure(N, sentence, model):
+    """
+    Returns a list of pure symbols in a sentence, taking under consideration current model.
+
+    :param N: number of variables
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :param model: current model containing positive or negative integers
+    :return pureSymbols: a list of pure symbols
+    """
     pureSymbolsTmp = []
 
     for clause in sentence:
@@ -399,6 +407,7 @@ def DPLLPure(N, sentence, model):
                     clausePureTmp.append(literal)
         pureSymbolsTmp.extend(clausePureTmp)
 
+    # perform a check for contradictory literals
     pureSymbols = []
     for symbol in pureSymbolsTmp:
         if -symbol not in pureSymbolsTmp:
@@ -409,6 +418,16 @@ def DPLLPure(N, sentence, model):
 
 
 def DPLLUnit(N, sentence, model):
+    """
+    Returns a list of unit clauses in a sentence, taking under consideration current model.
+    The list can contain contradictory clauses (e.g. 4 and -4) if it falls out of the model,
+    but that means that the model is not correct.
+
+    :param N: number of variables
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :param model: current model containing positive or negative integers
+    :return unitClauses: a list of unit clauses
+    """
     unitClauses = []
     for clause in sentence:
         clauseStatus = False
@@ -427,18 +446,36 @@ def DPLLUnit(N, sentence, model):
 
 
 def DPLLExtend(model, symbols):
+    """
+    Returns a concatenated, sorted list consisting of all symbols from model and symbols.
+
+    :param model: current model containing positive or negative integers
+    :param symbols: list of clauses with literals represented by positive or negative integers
+    :return sorted(tmp, key=abs): a list of list of all values
+    """
     tmp = model+symbols
     return sorted(tmp, key=abs)
 
 
 def DPLL(N, sentence, model, modelsave, level):
-    nrClausesSatisfied = 0
+    """
+    DPLL recursive algorithm. Checks whether current model satisfies the sentence.
+    If not, check whether the model makes the sentence false if not, it modifies the model and reruns itself.
+
+    :param N: number of variables
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :param model: current model containing positive or negative integers
+    :param modelsave: a reference to an object to be used to assign final solution to
+    :param level: an integer indicating the current stack depth
+    :return Boolean value: indicates whether current model satisfies the sentence or makes it false
+    """
+    nrClausesSatisfied = 0     # initialize variable
     for clause in sentence:
         for literal in clause:
-            if literal in model:
+            if literal in model:  # if clause satisfied
                 nrClausesSatisfied += 1
                 break
-    if nrClausesSatisfied == len(sentence):
+    if nrClausesSatisfied == len(sentence): # if all clauses satisfied
         modelsave.extend(model)
         return True
 
@@ -453,11 +490,12 @@ def DPLL(N, sentence, model, modelsave, level):
     # at this point of algorithm we have the situation, when model has too few propositions to finish the computations
 
     symbols = DPLLPure(N, sentence, model)  # get the list of pure symbols
-    if len(symbols) > 0:
+    if len(symbols) > 0:    # if pure symbols found
         return DPLL(N, sentence, DPLLExtend(model, symbols), modelsave, level+1)
 
-    tmpUnitClauses = DPLLUnit(N, sentence, model)  # get the list of unit clauses
+    tmpUnitClauses = DPLLUnit(N, sentence, model)  # get the list of unit clauses (possibly with contradictory literals)
 
+    # perform a check for contradictory literals
     symbols = []
     for symbol in tmpUnitClauses:
         if -symbol not in tmpUnitClauses:
@@ -466,7 +504,7 @@ def DPLL(N, sentence, model, modelsave, level):
         else:
             return False  # contradictory unit clauses detected
 
-    if len(symbols) > 0:
+    if len(symbols) > 0:    # if unit clauses found
         return DPLL(N, sentence, DPLLExtend(model, symbols), modelsave, level+1)
 
     for i in range(1, N+1):   # search for next unassigned literal
@@ -487,8 +525,14 @@ def DPLL(N, sentence, model, modelsave, level):
 
 
 def DPLLInit(N, sentence):
+    """
+    DPLL initialization function.
 
-    modelsave = []
+    :param N: number of symbols
+    :param sentence: list of clauses with literals represented by positive or negative integers
+    :return modelsave: a list containing the model (or empty list if no such assignment)
+    """
+    modelsave = []  # initialize a variable to assign correct model to
 
     if not DPLL(N, sentence, [], modelsave, 1):
         print("Sentence unsatisfiable")
