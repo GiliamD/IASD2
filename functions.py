@@ -64,7 +64,7 @@ def writeFile(filename, algorithm, N, C, V, T):
     :return:
     """
 
-    # Create output file with same name as input file, but with extension .sol<algorithm name>
+    # Create output file with same name as input file, but with extension .sol
     with open(filename.replace('.cnf','.sol'+algorithm),'w') as file:
         file.write('c '+'Solution to the 3SAT problem defined in '+filename.replace('3SATproblems/','')+
                    ', obtained using the '+algorithm+' algorithm'+'\n')
@@ -357,21 +357,23 @@ def WalkSAT(N, sentence, p, max_flips):
 
 
 def DPLLPure(N, sentence, model):
-    pureSymbols = []
+    pureSymbolsTmp = []
+
     for clause in sentence:
-        clauseStatus = False  # we assume clause is false
+        clausePureTmp = []
         for literal in clause:
-            for proposition in model:
-                if literal == proposition:  # if we find that it matches (so the clause is true)
-                    clauseStatus = True  # clause is true
-                    break
-                else:
-                    if -literal not in pureSymbols:
-                        pureSymbols.append(literal)
-                    else:
-                        pureSymbols.remove(-literal)
-            if clauseStatus is True:    # we don't need to check other literals in this clause
-                break
+            if literal in model:  # if we find the literal in the model
+                clausePureTmp = []
+                break  # we don't need to check other literals, because the clause is true
+            elif -literal not in model:  # if -literal exists in model, than we shouldn't do nothing
+                if literal not in pureSymbolsTmp:
+                    clausePureTmp.append(literal)
+        pureSymbolsTmp.extend(clausePureTmp)
+
+    pureSymbols = []
+    for symbol in pureSymbolsTmp:
+        if -symbol not in pureSymbolsTmp:
+            pureSymbols.append(symbol)
 
     pureSymbols = sorted(pureSymbols, key=abs)
     return pureSymbols
@@ -380,22 +382,13 @@ def DPLLPure(N, sentence, model):
 def DPLLUnit(N, sentence, model):
     unitClauses = []
     for clause in sentence:
-        if len(clause) == 1:  # if clause has exactly one literal
-            unitClauses.append(clause[0])  # add it to unit clauses
-            continue
-
-        clauseStatus = False  # we assume clause is false
         clauseUnitTmp = []  # initialize list, that will contain temporary candidates for unit clauses
         for literal in clause:
-            for proposition in model:
-                if literal == proposition:  # if we find that it matches (so the clause is true)
-                    clauseStatus = True  # clause is true
-                    break
-                elif literal != -proposition:  # if we don't find negation as well
-                    clauseUnitTmp.append(literal)   # append to possible candidates
-            if clauseStatus is True:    # we don't need to check other literals in this clause
+            if literal in model:  # if we find that it matches (so the clause is true)
                 break
-        if len(clauseUnitTmp) == 1:     # if we have only one literal, then this is a unit clause
+            elif -literal not in model:  # if we don't find negation as well
+                clauseUnitTmp.append(literal)   # append to possible candidates
+        if len(clauseUnitTmp) == 1:     # if we have only one literal here, then this is a unit clause
             unitClauses.append(clauseUnitTmp[0])
 
     unitClauses = sorted(unitClauses, key=abs)
@@ -403,8 +396,8 @@ def DPLLUnit(N, sentence, model):
 
 
 def DPLLExtend(model, symbols):
-    model.extend(symbols)
-    return sorted(model, key=abs)
+    tmp = model+symbols
+    return sorted(tmp, key=abs)
 
 
 def DPLL(N, sentence, model, modelsave):
@@ -429,6 +422,7 @@ def DPLL(N, sentence, model, modelsave):
             else:
                 break  # model has too few propositions)
         else:
+            print(model)
             modelsave = model
             return True  # every clause is satisfied (we didn't use break)
 
@@ -450,10 +444,12 @@ def DPLL(N, sentence, model, modelsave):
         print('No more unassigned symbols left!')
         return False
 
-    plus = DPLL(N, sentence, DPLLExtend(model, [symbol]), modelsave)
-    minus = DPLL(N, sentence, DPLLExtend(model, [-symbol]), modelsave)
-
-    return plus or minus
+    plus  = DPLL(N, sentence, DPLLExtend(model, [symbol]), modelsave)
+    if plus is False:
+        minus = DPLL(N, sentence, DPLLExtend(model, [-symbol]), modelsave)
+        return minus
+    else:
+        return plus
 
 
 
