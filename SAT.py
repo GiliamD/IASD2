@@ -106,18 +106,19 @@ print('Plotting ...')
 plt.figure(1)
 x = [key for key in list(zip(*sorted(GSATdata.items())))[0]]
 y = [mean(value) for value in list(zip(*sorted(GSATdata.items())))[1]]
-plt.plot(x,y,'ok-')
+plt.plot(x,y,'ok-',label='GSAT')
 
 x = [key for key in list(zip(*sorted(WalkSATdata.items())))[0]]
 y = [mean(value) for value in list(zip(*sorted(WalkSATdata.items())))[1]]
-plt.plot(x,y,'sr--')
+plt.plot(x,y,'sr--',label='WalkSAT')
 
 x = [key for key in list(zip(*sorted(DPLLdata.items())))[0]]
 y = [mean(value) for value in list(zip(*sorted(DPLLdata.items())))[1]]
-plt.plot(x,y,'db-.')
+plt.plot(x,y,'db-.',label='DPLL')
 
 plt.xlabel('Ratio of clauses to variables, C/N [-]')
 plt.ylabel('Average algorithm CPU time, t [sec]')
+plt.legend(loc='upper right')
 plt.grid(True)
 plt.show()
 
